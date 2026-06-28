@@ -14,34 +14,6 @@ body {
   min-height: 100vh;
 }
 
-/* ── Nav tabs ── */
-nav {
-  background: #0d0d1a;
-  border-bottom: 1px solid #1e1e3a;
-  display: flex;
-  gap: 0;
-  padding: 0 28px;
-}
-.nav-tab {
-  display: inline-block;
-  padding: 13px 22px;
-  font-family: 'Orbitron', monospace;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #4b5563;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
-  margin-bottom: -1px;
-}
-.nav-tab:hover { color: #9ca3af; }
-.nav-tab.active {
-  color: #7b9fff;
-  border-bottom-color: #7b9fff;
-}
-
 /* ── Header ── */
 header {
   background: linear-gradient(135deg, #0d0d1a 0%, #12121f 100%);
@@ -321,14 +293,9 @@ input[type="number"]:focus { border-color: #3d4fcc; }
 </head>
 <body>
 
-<nav>
-  <a class="nav-tab" href="index.html">Price Intelligence</a>
-  <a class="nav-tab active" href="calculator.html">Sales Calculator</a>
-</nav>
-
 <header>
   <div class="header-title">Sales Calculator</div>
-
+  <div class="header-sub">Markson's Furniture &amp; Mattress</div>
 </header>
 
 <div class="main">
