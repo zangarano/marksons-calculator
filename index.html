@@ -36,10 +36,10 @@ body {
   font-weight: 400;
   min-height: 100vh;
   background:
-    radial-gradient(1100px 620px at 16% -8%, rgba(46,64,87,0.65), transparent 60%),
-    radial-gradient(950px 520px at 102% 2%, rgba(156,139,88,0.14), transparent 58%),
-    radial-gradient(900px 760px at 84% 116%, rgba(132,0,0,0.20), transparent 60%),
-    linear-gradient(165deg, #0c121b 0%, #111c29 48%, #0a0f17 100%);
+    radial-gradient(1100px 620px at 18% -10%, rgba(178,42,42,0.45), transparent 60%),
+    radial-gradient(950px 520px at 102% 2%, rgba(156,139,88,0.20), transparent 58%),
+    radial-gradient(900px 760px at 84% 116%, rgba(40,0,0,0.55), transparent 60%),
+    linear-gradient(165deg, #6e0000 0%, #840000 50%, #560000 100%);
   background-attachment: fixed;
 }
 
@@ -62,7 +62,7 @@ body::before {
 header {
   position: relative;
   text-align: center;
-  background: linear-gradient(135deg, rgba(46,64,87,0.55) 0%, rgba(19,29,43,0.5) 100%);
+  background: linear-gradient(135deg, rgba(90,0,0,0.55) 0%, rgba(60,0,0,0.5) 100%);
   backdrop-filter: blur(16px) saturate(120%);
   -webkit-backdrop-filter: blur(16px) saturate(120%);
   border-bottom: 1px solid rgba(156,139,88,0.28);
@@ -375,35 +375,26 @@ input[type="number"]:focus {
 .stat-value.green { color: var(--green); }
 .stat-value.amber { color: var(--amber); }
 
-/* Lease-to-Own payment-frequency selector */
-.freq-toggle {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 9px;
-}
-.freq-opt {
-  flex: 1;
+/* Lease-to-Own payment-frequency selector (dropdown — mobile-safe) */
+.freq-select {
+  width: 100%;
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 5px 2px;
-  cursor: pointer;
-  border: 1px solid rgba(46,64,87,0.18);
-  background: rgba(255,255,255,0.4);
-  color: var(--muted);
-  border-radius: 6px;
-  transition: all 0.15s;
-}
-.freq-opt:hover:not(.active) {
-  border-color: var(--gold);
   color: var(--navy);
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(46,64,87,0.22);
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 9px;
+  cursor: pointer;
+  outline: none;
 }
-.freq-opt.active {
-  background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
+.freq-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(156,139,88,0.18);
 }
 .stat-sub {
   font-size: 9.5px;
@@ -492,18 +483,30 @@ input[type="number"]:focus {
         </div>
       </div>
 
+      <div class="field">
+        <label>Discount</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input type="number" id="inDiscount" min="0" step="0.01" placeholder="0.00" oninput="recalc()">
+        </div>
+      </div>
+
       <hr class="divider">
 
       <div class="total-row">
         <span class="total-label">Subtotal</span>
         <span class="total-value" id="outSubtotal">-</span>
       </div>
+      <div class="total-row" id="discountRow" style="display:none;">
+        <span class="total-label">Discount</span>
+        <span class="total-value" id="outDiscount" style="color:#e0556b;">-</span>
+      </div>
       <div class="total-row">
         <span class="total-label">Tax</span>
         <span class="total-value" id="outTax">-</span>
       </div>
       <div class="total-row grand-row">
-        <span class="total-label">Total Financed</span>
+        <span class="total-label">Total</span>
         <span class="total-value grand" id="outTotal">-</span>
       </div>
 
@@ -535,6 +538,16 @@ const PROGRAMS = [
     type: 'deferred',
     months: 12,
     minPurchase: 500,
+    penaltyAPR: 29.99,
+    provider: 'Nest Credit Card',
+    warning: false,
+  },
+  {
+    id: 'deferred24',
+    name: '0% Deferred Interest - 24 Months',
+    type: 'deferred',
+    months: 24,
+    minPurchase: 2000,
     penaltyAPR: 29.99,
     provider: 'Nest Credit Card',
     warning: false,
@@ -700,14 +713,23 @@ function recalc() {
   const product    = val('inProduct');
   const delivery   = val('inDelivery');
   const protection = val('inProtection');
+  const discount   = val('inDiscount');
   const taxRate    = 8;
 
   const subtotal = product + delivery + protection;
-  const taxAmount = subtotal * (taxRate / 100);
-  const total = subtotal + taxAmount;
+  const discounted = Math.max(0, subtotal - discount);   // discount comes off before tax
+  const taxAmount = discounted * (taxRate / 100);
+  const total = discounted + taxAmount;
 
   // Update summary
   document.getElementById('outSubtotal').textContent = subtotal > 0 ? fmt(subtotal) : '—';
+  const discRow = document.getElementById('discountRow');
+  if (discount > 0) {
+    discRow.style.display = 'flex';
+    document.getElementById('outDiscount').textContent = '−' + fmt(discount);
+  } else {
+    discRow.style.display = 'none';
+  }
   document.getElementById('outTax').textContent = subtotal > 0 ? fmt(taxAmount) : '—';
   document.getElementById('outTotal').textContent = total > 0 ? fmt(total) : '—';
 
@@ -761,7 +783,7 @@ function renderCard(card, prog, total) {
             <div class="stat-sub">over ${prog.months} months</div>
           </div>
           <div class="program-stat">
-            <div class="stat-label">Total Financed</div>
+            <div class="stat-label">Total</div>
             <div class="stat-value green">${fmtBig(total)}</div>
             <div class="stat-sub">0% interest if paid in full</div>
           </div>
@@ -779,11 +801,11 @@ function renderCard(card, prog, total) {
       statsHtml = `
         <div class="program-grid">
           <div class="program-stat">
-            <div class="freq-toggle">
-              <button type="button" class="freq-opt ${sel==='weekly'?'active':''}" onclick="setLtoFreq('${prog.id}','weekly')">Weekly</button>
-              <button type="button" class="freq-opt ${sel==='biweekly'?'active':''}" onclick="setLtoFreq('${prog.id}','biweekly')">Biweekly</button>
-              <button type="button" class="freq-opt ${sel==='monthly'?'active':''}" onclick="setLtoFreq('${prog.id}','monthly')">Monthly</button>
-            </div>
+            <select class="freq-select" onchange="setLtoFreq('${prog.id}', this.value)">
+              <option value="weekly" ${sel==='weekly'?'selected':''}>Weekly</option>
+              <option value="biweekly" ${sel==='biweekly'?'selected':''}>Biweekly</option>
+              <option value="monthly" ${sel==='monthly'?'selected':''}>Monthly</option>
+            </select>
             <div class="stat-value">${fmtBig(payment)}</div>
             <div class="stat-sub">${freq.label}</div>
           </div>
@@ -810,7 +832,7 @@ function renderCard(card, prog, total) {
               <div class="stat-sub">over ${prog.months} months</div>
             </div>
             <div class="program-stat">
-              <div class="stat-label">Total Financed</div>
+              <div class="stat-label">Total</div>
               <div class="stat-value green">${fmtBig(total)}</div>
               <div class="stat-sub">0% interest if paid in full</div>
             </div>
@@ -829,7 +851,7 @@ function renderCard(card, prog, total) {
               <div class="stat-sub">over ${prog.months} months</div>
             </div>
             <div class="program-stat">
-              <div class="stat-label">Total Financed</div>
+              <div class="stat-label">Total</div>
               <div class="stat-value green">${fmtBig(total)}</div>
               <div class="stat-sub">no interest · equal monthly payments</div>
             </div>
@@ -858,7 +880,7 @@ function renderCard(card, prog, total) {
 }
 
 function resetAll() {
-  ['inProduct','inDelivery','inProtection'].forEach(id => {
+  ['inProduct','inDelivery','inProtection','inDiscount'].forEach(id => {
     document.getElementById(id).value = '';
   });
   recalc();
