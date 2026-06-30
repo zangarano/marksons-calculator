@@ -672,6 +672,11 @@ function nowDate() {
   return PREVIEW_DATE ? new Date(PREVIEW_DATE + 'T12:00:00') : new Date();
 }
 
+// A program is a "dated special" if it carries any date rule.
+function isDateGated(p) {
+  return !!(p.availableFrom || p.availableUntil || p.availableDates || p.daysOfWeek);
+}
+
 // Date-based availability. A program card shows only if ALL set rules pass:
 //   availableFrom  "YYYY-MM-DD"  — don't show before this date
 //   availableUntil "YYYY-MM-DD"  — don't show after this date
@@ -742,9 +747,14 @@ function recalc() {
     return;
   }
 
+  // Is any dated special live right now? If so, of the everyday cards only the
+  // 12-month term (and Lease to Own) stays; the 24/36/48-month ones are hidden.
+  const specialLive = PROGRAMS.some(p => isDateGated(p) && isAvailable(p));
+
   PROGRAMS.forEach(prog => {
     let card = document.getElementById('card-' + prog.id);
-    if (!isAvailable(prog)) {        // outside its date window → hide
+    const hiddenBySpecial = specialLive && !isDateGated(prog) && prog.months !== 12 && prog.type !== 'lto';
+    if (!isAvailable(prog) || hiddenBySpecial) {   // outside its window, or an everyday card suppressed while a special runs
       if (card) card.remove();
       return;
     }
@@ -765,6 +775,10 @@ function renderCard(card, prog, total) {
   if (prog.minPurchase && total < prog.minPurchase) {
     eligible = false;
     ineligibleReason = `Minimum purchase of ${fmt(prog.minPurchase)} required. Current total is ${fmt(total)}.`;
+  }
+  if (prog.months >= 36 && val('inDiscount') > 0) {
+    eligible = false;
+    ineligibleReason = 'Not available when a discount is applied.';
   }
 
   // Build card classes
