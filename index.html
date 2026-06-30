@@ -428,6 +428,22 @@ input[type="number"]:focus {
   letter-spacing: 0.04em;
 }
 
+/* ── Preview banner ── */
+.preview-banner {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #dccf95, #c8b576);
+  color: #2E4057;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-align: center;
+  padding: 11px 16px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.35);
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -533,6 +549,16 @@ const PROGRAMS = [
     warning: false,
   },
   {
+    id: 'deferred48',
+    name: '0% Deferred Interest - 48 Months',
+    type: 'deferred',
+    months: 48,
+    minPurchase: 4000,
+    penaltyAPR: 29.99,
+    provider: 'Nest Credit Card',
+    warning: false,
+  },
+  {
     id: 'lto',
     name: 'Lease to Own',
     type: 'lto',
@@ -554,14 +580,14 @@ const PROGRAMS = [
     id: 'jul418', type: 'bread', kind: 'deferred',
     name: '0% Deferred Interest - 18 Months',
     provider: 'Nest Credit Card',
-    months: 18, penaltyAPR: 29.99, badge: 'July 4th', warning: false,
+    months: 18, minPurchase: 1500, penaltyAPR: 29.99, badge: 'July 4th', warning: false,
     availableFrom: '2026-07-01', availableUntil: '2026-07-08',
   },
   {
     id: 'jul860', type: 'bread', kind: 'equal',
     name: 'No Interest - 60 Months',
     provider: 'Nest Credit Card',
-    months: 60, badge: 'July 4th', warning: false,
+    months: 60, minPurchase: 5000, badge: 'July 4th', warning: false,
     availableFrom: '2026-07-01', availableUntil: '2026-07-08',
   },
 
@@ -570,14 +596,14 @@ const PROGRAMS = [
     id: 'lab424', type: 'bread', kind: 'deferred',
     name: '0% Deferred Interest - 24 Months',
     provider: 'Nest Credit Card',
-    months: 24, penaltyAPR: 29.99, badge: 'Labor Day', warning: false,
+    months: 24, minPurchase: 1500, penaltyAPR: 29.99, badge: 'Labor Day', warning: false,
     availableFrom: '2026-09-03', availableUntil: '2026-09-09',
   },
   {
     id: 'lab848', type: 'bread', kind: 'equal',
     name: 'No Interest - 48 Months',
     provider: 'Nest Credit Card',
-    months: 48, badge: 'Labor Day', warning: false,
+    months: 48, minPurchase: 3000, badge: 'Labor Day', warning: false,
     availableFrom: '2026-09-03', availableUntil: '2026-09-09',
   },
 
@@ -593,14 +619,14 @@ const PROGRAMS = [
     id: 'q3_848', type: 'bread', kind: 'equal',
     name: 'No Interest - 48 Months',
     provider: 'Nest Credit Card',
-    months: 48, badge: 'Q3 Special', warning: false,
+    months: 48, minPurchase: 4000, badge: 'Q3 Special', warning: false,
     availableDates: Q3_SPECIAL_DATES,
   },
   {
     id: 'q3_860', type: 'bread', kind: 'equal',
     name: 'No Interest - 60 Months',
     provider: 'Nest Credit Card',
-    months: 60, badge: 'Q3 Special', warning: false,
+    months: 60, minPurchase: 5000, badge: 'Q3 Special', warning: false,
     availableDates: Q3_SPECIAL_DATES,
   },
 ];
@@ -618,6 +644,20 @@ function setLtoFreq(progId, freq) {
   recalc();
 }
 
+// ── Date preview: append ?date=YYYY-MM-DD to the URL to see the page as it
+// will look on that day. No parameter = the device's real date (live).
+function getPreviewDate() {
+  try {
+    const p = new URLSearchParams(location.search).get('date');
+    if (p && /^\d{4}-\d{2}-\d{2}$/.test(p)) return p;
+  } catch (e) {}
+  return null;
+}
+const PREVIEW_DATE = getPreviewDate();
+function nowDate() {
+  return PREVIEW_DATE ? new Date(PREVIEW_DATE + 'T12:00:00') : new Date();
+}
+
 // Date-based availability. A program card shows only if ALL set rules pass:
 //   availableFrom  "YYYY-MM-DD"  — don't show before this date
 //   availableUntil "YYYY-MM-DD"  — don't show after this date
@@ -625,7 +665,7 @@ function setLtoFreq(progId, freq) {
 //   availableDates ["YYYY-MM-DD"] — only show on these exact dates
 // With none set (the default), the card always shows.
 function isAvailable(prog) {
-  const now = new Date();
+  const now = nowDate();
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
   if (prog.availableFrom && today < new Date(prog.availableFrom + 'T00:00:00')) return false;
@@ -699,7 +739,7 @@ function renderCard(card, prog, total) {
   let eligible = true;
   let ineligibleReason = '';
 
-  if (prog.type === 'deferred' && total < prog.minPurchase) {
+  if (prog.minPurchase && total < prog.minPurchase) {
     eligible = false;
     ineligibleReason = `Minimum purchase of ${fmt(prog.minPurchase)} required. Current total is ${fmt(total)}.`;
   }
@@ -821,6 +861,17 @@ function resetAll() {
     document.getElementById(id).value = '';
   });
   recalc();
+}
+
+// When viewing a simulated date, show a clear banner so a preview is never
+// mistaken for the live page.
+if (PREVIEW_DATE) {
+  const b = document.createElement('div');
+  b.className = 'preview-banner';
+  b.textContent = 'PREVIEW — showing ' +
+    nowDate().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) +
+    '   ·   remove “?date=…” from the address bar for the live view';
+  document.body.appendChild(b);
 }
 </script>
 </body>
