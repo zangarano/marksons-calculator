@@ -13,18 +13,19 @@
   --navy-soft:   #41587a;
   --gold:        #9C8B58;
   --gold-deep:   #7e6f42;
-  --gold-light:  #c8b576;
   --burgundy:    #840000;
-  --burgundy-lt: #c0394a;
   --white:       #ffffff;
+  --paper:       #f6f4ef;
   --ink:         #243140;
   --muted:       #5d6b7d;
   --faint:       #8a96a6;
   --green:       #15803d;
   --amber:       #b45309;
-  --glass:       rgba(255,255,255,0.96);
-  --glass-2:     rgba(255,255,255,0.88);
-  --glass-brd:   rgba(255,255,255,0.92);
+  --glass:       rgba(255,255,255,0.72);
+  --glass-2:     rgba(255,255,255,0.52);
+  --glass-brd:   rgba(255,255,255,0.85);
+  --navy-brd:    rgba(46,64,87,0.12);
+  --gold-brd:    rgba(156,139,88,0.32);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,62 +36,83 @@ body {
   font-weight: 400;
   min-height: 100vh;
   background:
-    radial-gradient(1100px 620px at 16% -8%, rgba(46,64,87,0.65), transparent 60%),
-    radial-gradient(950px 520px at 102% 2%, rgba(156,139,88,0.14), transparent 58%),
-    radial-gradient(900px 760px at 84% 116%, rgba(132,0,0,0.20), transparent 60%),
-    linear-gradient(165deg, #0c121b 0%, #111c29 48%, #0a0f17 100%);
+    radial-gradient(1100px 620px at 14% -10%, rgba(46,64,87,0.14), transparent 60%),
+    radial-gradient(960px 520px at 102% 0%, rgba(156,139,88,0.16), transparent 58%),
+    radial-gradient(900px 760px at 86% 116%, rgba(132,0,0,0.06), transparent 60%),
+    linear-gradient(165deg, #fbfaf7 0%, #eef0ee 52%, #f4f1ea 100%);
   background-attachment: fixed;
 }
 
-/* faint starfield shimmer for the space-age depth */
+/* soft luminous specks for the airy space-age depth */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(1px 1px at 18% 24%, rgba(255,255,255,0.18), transparent),
-    radial-gradient(1px 1px at 67% 14%, rgba(200,181,118,0.20), transparent),
-    radial-gradient(1px 1px at 41% 71%, rgba(255,255,255,0.12), transparent),
-    radial-gradient(1px 1px at 88% 58%, rgba(255,255,255,0.10), transparent),
-    radial-gradient(1px 1px at 9% 82%, rgba(200,181,118,0.16), transparent);
-  opacity: 0.7;
+    radial-gradient(1px 1px at 22% 26%, rgba(46,64,87,0.16), transparent),
+    radial-gradient(1px 1px at 68% 16%, rgba(156,139,88,0.22), transparent),
+    radial-gradient(1px 1px at 44% 72%, rgba(46,64,87,0.12), transparent),
+    radial-gradient(1px 1px at 88% 60%, rgba(156,139,88,0.16), transparent);
+  opacity: 0.6;
 }
 
-/* ── Header (sits on the navy backdrop) ── */
+/* ── Header ── */
 header {
   position: relative;
-  text-align: center;
-  background: linear-gradient(135deg, rgba(46,64,87,0.55) 0%, rgba(19,29,43,0.5) 100%);
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  border-bottom: 1px solid rgba(156,139,88,0.28);
-  padding: 26px 30px;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.35);
+  background: linear-gradient(135deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.62) 100%);
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  border-bottom: 1px solid rgba(156,139,88,0.30);
+  padding: 22px 30px 20px;
+  box-shadow: 0 6px 30px rgba(46,64,87,0.08);
+}
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 .brand-name {
   font-family: 'Cinzel', serif;
-  font-size: 31px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--white);
-  line-height: 1.12;
+  letter-spacing: 0.04em;
+  color: var(--burgundy);
+  line-height: 1;
+}
+.brand-name .apos { color: var(--burgundy); }
+.brand-divider {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.brand-diamonds {
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.brand-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--gold-deep);
+  text-transform: uppercase;
 }
 .header-title {
   font-family: 'Cinzel', serif;
-  font-size: 16px;
+  font-size: 30px;
   font-weight: 600;
-  color: var(--gold-light);
-  letter-spacing: 0.2em;
+  color: var(--navy);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-top: 5px;
 }
 .header-accent {
-  width: 230px;
-  max-width: 70%;
+  width: 64px;
   height: 2px;
-  margin: 14px auto;
-  background: linear-gradient(90deg, rgba(200,181,118,0), var(--gold-light) 50%, rgba(200,181,118,0));
+  margin-top: 10px;
+  background: linear-gradient(90deg, var(--gold), rgba(156,139,88,0));
   border-radius: 2px;
 }
 
@@ -108,16 +130,17 @@ header {
   .main { grid-template-columns: 1fr; }
 }
 
-/* ── White work-zone glass surfaces ── */
+/* ── Glass surfaces ── */
 .panel, .program-card, .empty-state {
   background: linear-gradient(155deg, var(--glass), var(--glass-2));
   border: 1px solid var(--glass-brd);
   border-radius: 16px;
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
   box-shadow:
-    0 18px 44px rgba(0,0,0,0.38),
-    inset 0 1px 0 rgba(255,255,255,0.95);
+    0 14px 40px rgba(46,64,87,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    inset 0 -1px 0 rgba(46,64,87,0.04);
 }
 
 .panel { padding: 26px; }
@@ -130,7 +153,7 @@ header {
   color: var(--gold-deep);
   margin-bottom: 22px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(156,139,88,0.24);
+  border-bottom: 1px solid rgba(156,139,88,0.22);
 }
 
 .field { margin-bottom: 17px; }
@@ -157,8 +180,8 @@ header {
 }
 input[type="number"] {
   width: 100%;
-  background: rgba(255,255,255,0.85);
-  border: 1px solid rgba(46,64,87,0.18);
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(46,64,87,0.16);
   color: var(--navy);
   border-radius: 9px;
   padding: 11px 16px 11px 30px;
@@ -175,7 +198,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 input[type="number"]::placeholder { color: #a9b3c0; font-weight: 400; }
 input[type="number"]:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(156,139,88,0.20);
+  box-shadow: 0 0 0 3px rgba(156,139,88,0.18);
 }
 
 .tax-display {
@@ -189,7 +212,7 @@ input[type="number"]:focus {
 
 .divider {
   border: none;
-  border-top: 1px solid rgba(156,139,88,0.24);
+  border-top: 1px solid rgba(156,139,88,0.22);
   margin: 22px 0;
 }
 
@@ -227,7 +250,7 @@ input[type="number"]:focus {
   margin-top: 22px;
   padding: 12px;
   background: rgba(46,64,87,0.04);
-  border: 1px solid rgba(156,139,88,0.36);
+  border: 1px solid rgba(156,139,88,0.34);
   border-radius: 9px;
   color: var(--gold-deep);
   font-family: 'Montserrat', sans-serif;
@@ -239,7 +262,7 @@ input[type="number"]:focus {
   text-transform: uppercase;
 }
 .reset-btn:hover {
-  background: rgba(156,139,88,0.16);
+  background: rgba(156,139,88,0.14);
   border-color: var(--gold);
   color: var(--navy);
 }
@@ -255,17 +278,17 @@ input[type="number"]:focus {
 }
 .program-card.eligible {
   box-shadow:
-    0 18px 44px rgba(0,0,0,0.38),
+    0 14px 40px rgba(46,64,87,0.12),
     inset 0 1px 0 rgba(255,255,255,0.95),
-    inset 3px 0 0 rgba(21,128,61,0.7);
+    inset 3px 0 0 rgba(21,128,61,0.65);
 }
 .program-card.warning-card {
   box-shadow:
-    0 18px 44px rgba(0,0,0,0.38),
+    0 14px 40px rgba(46,64,87,0.12),
     inset 0 1px 0 rgba(255,255,255,0.95),
-    inset 3px 0 0 rgba(180,83,9,0.7);
+    inset 3px 0 0 rgba(180,83,9,0.65);
 }
-.program-card.ineligible { opacity: 0.55; }
+.program-card.ineligible { opacity: 0.62; }
 .program-card:hover { transform: translateY(-2px); }
 
 .program-header {
@@ -305,7 +328,7 @@ input[type="number"]:focus {
 .tag-eligible {
   background: rgba(21,128,61,0.12);
   color: var(--green);
-  border: 1px solid rgba(21,128,61,0.38);
+  border: 1px solid rgba(21,128,61,0.35);
 }
 .tag-ineligible {
   background: rgba(46,64,87,0.06);
@@ -315,7 +338,7 @@ input[type="number"]:focus {
 .tag-warning {
   background: rgba(180,83,9,0.12);
   color: var(--amber);
-  border: 1px solid rgba(180,83,9,0.38);
+  border: 1px solid rgba(180,83,9,0.35);
 }
 
 .program-grid {
@@ -324,8 +347,8 @@ input[type="number"]:focus {
   gap: 13px;
 }
 .program-stat {
-  background: rgba(248,247,243,0.92);
-  border: 1px solid rgba(46,64,87,0.10);
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(46,64,87,0.08);
   border-radius: 11px;
   padding: 14px 15px;
 }
@@ -374,15 +397,20 @@ input[type="number"]:focus {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(156,139,88,0.45); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(156,139,88,0.40); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-accent"></div>
-  <div class="brand-name">Markson's Furniture &amp; Mattress</div>
+  <div class="brand-lockup">
+    <div class="brand-name">M<span style="font-variant:small-caps;">arkson</span><span class="apos">'</span>S</div>
+    <div class="brand-divider">
+      <span class="brand-diamonds">&#9671;&#9671;&#9671;</span>
+      <span class="brand-sub">Furniture &amp; Mattress</span>
+    </div>
+  </div>
   <div class="header-title">Sales Calculator</div>
   <div class="header-accent"></div>
 </header>
@@ -416,6 +444,11 @@ input[type="number"]:focus {
           <span class="prefix">$</span>
           <input type="number" id="inProtection" min="0" step="0.01" placeholder="0.00" oninput="recalc()">
         </div>
+      </div>
+
+      <div class="field">
+        <label>Sales Tax Rate</label>
+        <div class="tax-display">8%</div>
       </div>
 
       <hr class="divider">
@@ -467,12 +500,21 @@ const PROGRAMS = [
     warning: false,
   },
   {
-    id: 'lto',
-    name: 'Lease to Own',
+    id: 'koalifi',
+    name: 'Koalifi Lease-to-Own',
     type: 'lto',
     months: 12,
     factor: 2.1,
-    provider: 'Koalifi · Acima',
+    provider: 'Koalifi',
+    warning: false,
+  },
+  {
+    id: 'acima',
+    name: 'Acima Lease-to-Own',
+    type: 'lto',
+    months: 12,
+    factor: 2.1,
+    provider: 'Acima',
     warning: false,
   },
 ];
