@@ -292,6 +292,16 @@ input[type="number"]:focus {
   margin-top: 5px;
   text-transform: uppercase;
 }
+.program-note {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--faint);
+  margin-top: 5px;
+  line-height: 1.4;
+  max-width: 340px;
+}
 .program-tag {
   font-family: 'Montserrat', sans-serif;
   font-size: 9.5px;
@@ -300,6 +310,22 @@ input[type="number"]:focus {
   border-radius: 20px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.promo-badge {
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4d3f12;
+  background: linear-gradient(135deg, #dccf95, #c8b576);
+  border: 1px solid rgba(156,139,88,0.6);
+  padding: 2px 8px;
+  border-radius: 20px;
+  vertical-align: middle;
+  margin-left: 7px;
   white-space: nowrap;
 }
 .tag-eligible {
@@ -347,6 +373,37 @@ input[type="number"]:focus {
 }
 .stat-value.green { color: var(--green); }
 .stat-value.amber { color: var(--amber); }
+
+/* Lease-to-Own payment-frequency selector */
+.freq-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 9px;
+}
+.freq-opt {
+  flex: 1;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 5px 2px;
+  cursor: pointer;
+  border: 1px solid rgba(46,64,87,0.18);
+  background: rgba(255,255,255,0.4);
+  color: var(--muted);
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.freq-opt:hover:not(.active) {
+  border-color: var(--gold);
+  color: var(--navy);
+}
+.freq-opt.active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
 .stat-sub {
   font-size: 9.5px;
   color: var(--faint);
@@ -445,6 +502,15 @@ input[type="number"]:focus {
 </div>
 
 <script>
+// Bread Financial "Q3 Special" — the 15 selected dates from the schedule.
+const Q3_SPECIAL_DATES = [
+  '2026-08-07', '2026-08-08', '2026-08-10',
+  '2026-08-21', '2026-08-22', '2026-08-24',
+  '2026-08-28', '2026-08-29', '2026-08-31',
+  '2026-09-11', '2026-09-12', '2026-09-14',
+  '2026-09-18', '2026-09-19', '2026-09-21',
+];
+
 const PROGRAMS = [
   {
     id: 'deferred12',
@@ -471,11 +537,108 @@ const PROGRAMS = [
     name: 'Lease to Own',
     type: 'lto',
     months: 12,
-    factor: 2.1,
-    provider: 'Koalifi · Acima',
+    factor: 2.201,  // tuned so $1,000 pre-tax ≈ $91.43 biweekly (incl. 8% tax)
+    note: 'Payments close estimates. Exact, final payments at time of signing.',
     warning: false,
   },
+
+  // ───────── Q3 2026 PROMO PLANS (date-driven) ─────────
+  // From the "Q3 Bread" schedule. Bread Financial is the issuing bank;
+  // "Nest Credit Card" is what the customer sees, so these match the
+  // everyday Nest cards above. Each card only shows on its promo dates.
+  // (Bread plan #s kept in the id for staff reference: 418, 860, 424,
+  //  848, 412, 848, 860.)
+
+  // July 4th window — Jul 1–8, all 7 days
+  {
+    id: 'jul418', type: 'bread', kind: 'deferred',
+    name: '0% Deferred Interest - 18 Months',
+    provider: 'Nest Credit Card',
+    months: 18, penaltyAPR: 29.99, badge: 'July 4th', warning: false,
+    availableFrom: '2026-07-01', availableUntil: '2026-07-08',
+  },
+  {
+    id: 'jul860', type: 'bread', kind: 'equal',
+    name: 'No Interest - 60 Months',
+    provider: 'Nest Credit Card',
+    months: 60, badge: 'July 4th', warning: false,
+    availableFrom: '2026-07-01', availableUntil: '2026-07-08',
+  },
+
+  // Labor Day window — Sep 3–9, all 7 days
+  {
+    id: 'lab424', type: 'bread', kind: 'deferred',
+    name: '0% Deferred Interest - 24 Months',
+    provider: 'Nest Credit Card',
+    months: 24, penaltyAPR: 29.99, badge: 'Labor Day', warning: false,
+    availableFrom: '2026-09-03', availableUntil: '2026-09-09',
+  },
+  {
+    id: 'lab848', type: 'bread', kind: 'equal',
+    name: 'No Interest - 48 Months',
+    provider: 'Nest Credit Card',
+    months: 48, badge: 'Labor Day', warning: false,
+    availableFrom: '2026-09-03', availableUntil: '2026-09-09',
+  },
+
+  // Q3 Special — only on the 15 selected dates above
+  {
+    id: 'q3_412', type: 'bread', kind: 'deferred',
+    name: '0% Deferred Interest - 12 Months',
+    provider: 'Nest Credit Card',
+    months: 12, penaltyAPR: 29.99, badge: 'Q3 Special', warning: false,
+    availableDates: Q3_SPECIAL_DATES,
+  },
+  {
+    id: 'q3_848', type: 'bread', kind: 'equal',
+    name: 'No Interest - 48 Months',
+    provider: 'Nest Credit Card',
+    months: 48, badge: 'Q3 Special', warning: false,
+    availableDates: Q3_SPECIAL_DATES,
+  },
+  {
+    id: 'q3_860', type: 'bread', kind: 'equal',
+    name: 'No Interest - 60 Months',
+    provider: 'Nest Credit Card',
+    months: 60, badge: 'Q3 Special', warning: false,
+    availableDates: Q3_SPECIAL_DATES,
+  },
 ];
+
+// Lease-to-Own payment frequencies (12-month term).
+const LTO_FREQS = {
+  weekly:   { divisor: 52, label: '52 payments / year' },
+  biweekly: { divisor: 26, label: '26 payments / year' },
+  monthly:  { divisor: 12, label: '12 payments / year' },
+};
+const ltoState = {}; // remembers the chosen frequency per program
+
+function setLtoFreq(progId, freq) {
+  ltoState[progId] = freq;
+  recalc();
+}
+
+// Date-based availability. A program card shows only if ALL set rules pass:
+//   availableFrom  "YYYY-MM-DD"  — don't show before this date
+//   availableUntil "YYYY-MM-DD"  — don't show after this date
+//   daysOfWeek     [0..6]        — only show on these weekdays (0=Sun … 6=Sat)
+//   availableDates ["YYYY-MM-DD"] — only show on these exact dates
+// With none set (the default), the card always shows.
+function isAvailable(prog) {
+  const now = new Date();
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  if (prog.availableFrom && today < new Date(prog.availableFrom + 'T00:00:00')) return false;
+  if (prog.availableUntil && today > new Date(prog.availableUntil + 'T23:59:59')) return false;
+  if (prog.daysOfWeek && !prog.daysOfWeek.includes(now.getDay())) return false;
+  if (prog.availableDates) {
+    const iso = today.getFullYear() + '-' +
+      String(today.getMonth() + 1).padStart(2, '0') + '-' +
+      String(today.getDate()).padStart(2, '0');
+    if (!prog.availableDates.includes(iso)) return false;
+  }
+  return true;
+}
 
 function fmt(n) {
   if (n === null || isNaN(n)) return '-';
@@ -518,6 +681,10 @@ function recalc() {
 
   PROGRAMS.forEach(prog => {
     let card = document.getElementById('card-' + prog.id);
+    if (!isAvailable(prog)) {        // outside its date window → hide
+      if (card) card.remove();
+      return;
+    }
     if (!card) {
       card = document.createElement('div');
       card.id = 'card-' + prog.id;
@@ -565,13 +732,19 @@ function renderCard(card, prog, total) {
         </div>`;
     } else if (prog.type === 'lto') {
       const totalCost = total * prog.factor;
-      const biweekly = totalCost / 26;
+      const sel = ltoState[prog.id] || 'biweekly';
+      const freq = LTO_FREQS[sel];
+      const payment = totalCost / freq.divisor;
       statsHtml = `
         <div class="program-grid">
           <div class="program-stat">
-            <div class="stat-label">Biweekly Payment</div>
-            <div class="stat-value">${fmtBig(biweekly)}</div>
-            <div class="stat-sub">26 payments / year</div>
+            <div class="freq-toggle">
+              <button type="button" class="freq-opt ${sel==='weekly'?'active':''}" onclick="setLtoFreq('${prog.id}','weekly')">Weekly</button>
+              <button type="button" class="freq-opt ${sel==='biweekly'?'active':''}" onclick="setLtoFreq('${prog.id}','biweekly')">Biweekly</button>
+              <button type="button" class="freq-opt ${sel==='monthly'?'active':''}" onclick="setLtoFreq('${prog.id}','monthly')">Monthly</button>
+            </div>
+            <div class="stat-value">${fmtBig(payment)}</div>
+            <div class="stat-sub">${freq.label}</div>
           </div>
           <div class="program-stat">
             <div class="stat-label">90-Day Price</div>
@@ -581,9 +754,46 @@ function renderCard(card, prog, total) {
           <div class="program-stat">
             <div class="stat-label">Total Lease Cost</div>
             <div class="stat-value amber">${fmtBig(totalCost)}</div>
-            <div class="stat-sub">${prog.factor}x factor - ${prog.months} months</div>
+            <div class="stat-sub">${(+prog.factor).toFixed(1)}x factor - ${prog.months} months</div>
           </div>
         </div>`;
+    } else if (prog.type === 'bread') {
+      const monthly = total / prog.months;
+      if (prog.kind === 'deferred') {
+        // Identical layout to the everyday deferred-interest cards
+        statsHtml = `
+          <div class="program-grid">
+            <div class="program-stat">
+              <div class="stat-label">Monthly Payment</div>
+              <div class="stat-value">${fmtBig(monthly)}</div>
+              <div class="stat-sub">over ${prog.months} months</div>
+            </div>
+            <div class="program-stat">
+              <div class="stat-label">Total Financed</div>
+              <div class="stat-value green">${fmtBig(total)}</div>
+              <div class="stat-sub">0% interest if paid in full</div>
+            </div>
+            <div class="program-stat">
+              <div class="stat-label">Penalty APR</div>
+              <div class="stat-value amber">${prog.penaltyAPR}%</div>
+              <div class="stat-sub">if not paid off in time</div>
+            </div>
+          </div>`;
+      } else {
+        statsHtml = `
+          <div class="program-grid">
+            <div class="program-stat">
+              <div class="stat-label">Monthly Payment</div>
+              <div class="stat-value">${fmtBig(monthly)}</div>
+              <div class="stat-sub">over ${prog.months} months</div>
+            </div>
+            <div class="program-stat">
+              <div class="stat-label">Total Financed</div>
+              <div class="stat-value green">${fmtBig(total)}</div>
+              <div class="stat-sub">no interest · equal monthly payments</div>
+            </div>
+          </div>`;
+      }
     }
   }
 
@@ -596,8 +806,9 @@ function renderCard(card, prog, total) {
   card.innerHTML = `
     <div class="program-header">
       <div>
-        <div class="program-name">${prog.name}</div>
-        <div class="program-provider">${prog.provider}</div>
+        <div class="program-name">${prog.name}${prog.badge ? ` <span class="promo-badge">${prog.badge}</span>` : ''}</div>
+        ${prog.provider ? `<div class="program-provider">${prog.provider}</div>` : ''}
+        ${prog.note ? `<div class="program-note">${prog.note}</div>` : ''}
       </div>
       ${tagHtml}
     </div>
