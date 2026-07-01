@@ -601,7 +601,7 @@ const PROGRAMS = [
     id: 'jul860', type: 'bread', kind: 'equal',
     name: 'No Interest - 60 Months',
     provider: 'Nest Credit Card',
-    months: 60, minPurchase: 5000, badge: 'July 4th', warning: false,
+    months: 60, minPurchase: 4000, badge: 'July 4th', warning: false,
     availableFrom: '2026-07-01', availableUntil: '2026-07-08',
   },
 
@@ -766,6 +766,10 @@ function recalc() {
     }
     renderCard(card, prog, total);
   });
+
+  // Always keep Lease to Own pinned to the bottom, whatever else is showing.
+  const ltoCard = document.getElementById('card-lto');
+  if (ltoCard) results.appendChild(ltoCard);
 }
 
 function renderCard(card, prog, total) {
